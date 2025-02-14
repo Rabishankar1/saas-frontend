@@ -25,7 +25,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App h-full bg-white dark:bg-gray-800 transition-colors">
+      <div className="App min-h-full bg-white dark:bg-gray-800 transition-colors">
         <Navbar user={user} />
         <div className="p-4 sm:p-8 xl:p-12 lg:p-16">
           <Routes>
