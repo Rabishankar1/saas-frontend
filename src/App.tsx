@@ -33,7 +33,7 @@ function App() {
         return null;
       }
     },
-    // refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false,
     // refetchOnReconnect: false,
     // refetchOnMount: false,
     retry: false,
