@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { plansType, UserInterface } from "../constants";
+import CardLoader from "../components/CardLoader";
 
 interface Plan {
   name: string;
@@ -13,25 +14,30 @@ interface Plan {
 const PricingPage = ({
   refetchData,
   user,
+  isUserDataLoading,
 }: {
   refetchData: any;
   user: UserInterface;
+  isUserDataLoading: boolean;
 }) => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
 
-  const { data, isLoading, error } = useQuery<Plan[]>({
+  const { data, error, isLoading } = useQuery<Plan[]>({
     queryKey: ["pricing"],
     queryFn: async () => {
-      const response = await axios.get(`${import.meta.env.VITE_SERVER_DOMAIN}/api/pricing`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/api/pricing`,
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     },
   });
 
-  const mutation = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: async (payload: { plan: plansType; userId?: string }) => {
       const response = await axios.post(
         `${import.meta.env.VITE_SERVER_DOMAIN}/api/select-plan`,
@@ -46,7 +52,7 @@ const PricingPage = ({
 
   const handleSelectPlan = async (plan: plansType) => {
     console.log("Selected plan:", plan, user);
-    const response = await mutation.mutateAsync({ plan, userId: user?._id });
+    const response = await mutateAsync({ plan, userId: user?._id });
     console.log(response);
     refetchData();
   };
@@ -126,7 +132,12 @@ const PricingPage = ({
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-2xl lg:max-w-7xl">
+        <div
+          className={`mx-auto mt-10 max-w-2xl lg:max-w-7xl ${
+            isPending || isUserDataLoading ? "opacity-20" : ""
+          }`}
+        >
+          {(isPending || isUserDataLoading) && <CardLoader />}
           <div className="grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
             {data?.map((plan, idx) => {
               const classes = bentoClasses[idx] || bentoClasses[1];
@@ -147,9 +158,9 @@ const PricingPage = ({
                       isTierSelected
                         ? "inset-shadow-sm inset-shadow-indigo-500"
                         : ""
-                    } bg-gray-900 dark:bg-gray-900 ${ isTierSelected
-                        ? "border border-indigo-500"
-                        : ""}`}
+                    } bg-gray-900 dark:bg-gray-900 ${
+                      isTierSelected ? "border border-indigo-500" : ""
+                    }`}
                   />
 
                   {/* Actual card content */}

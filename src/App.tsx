@@ -8,7 +8,11 @@ import Navbar from "./components/Navbar";
 import axios from "axios";
 
 function App() {
-  const { data: user, refetch: refetchData } = useQuery({
+  const {
+    data: user,
+    refetch: refetchData,
+    isFetching: isUserDataLoading,
+  } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
       try {
@@ -41,12 +45,23 @@ function App() {
         <Navbar user={user} />
         <div className="p-4 sm:p-8 xl:p-12 lg:p-16">
           <Routes>
-            <Route path="/" element={<Home user={user} />} />
+            <Route
+              path="/"
+              element={
+                <Home user={user} isUserDataLoading={isUserDataLoading} />
+              }
+            />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route
               path="/pricing"
-              element={<PricingPage refetchData={refetchData} user={user} />}
+              element={
+                <PricingPage
+                  refetchData={refetchData}
+                  user={user}
+                  isUserDataLoading={isUserDataLoading}
+                />
+              }
             />
           </Routes>
         </div>

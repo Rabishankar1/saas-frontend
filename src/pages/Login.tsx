@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { LoginUser } from "../Apis";
+import ButtonLoader from "../components/ButtonLoader";
 
 const Login = () => {
   interface InputValue {
@@ -13,6 +14,7 @@ const Login = () => {
     identifier: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
   const { identifier, password } = inputValue;
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,9 +27,31 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const successStatus = await LoginUser(identifier, password);
-    if (successStatus) {
-      window.location.href = "/";
+    setLoading(true);
+    const id = toast.loading("Logging in...");
+
+    try {
+      const successStatus = await LoginUser(identifier, password);
+      if (successStatus) {
+        toast.update(id, {
+          render: "Logged in. Redirecting...",
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        window.location.href = "/";
+      } else {
+        toast.update(id, {
+          render: "Error logging in.",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,7 +79,15 @@ const Login = () => {
             onChange={handleOnChange}
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">
+          {loading ? (
+            <>
+              <ButtonLoader /> Loading...
+            </>
+          ) : (
+            "Submit"
+          )}
+        </button>
         <span>
           Don't have an account? <Link to={"/signup"}>Signup</Link>
         </span>

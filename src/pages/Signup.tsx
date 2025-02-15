@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { SignupUser } from "../Apis";
 import { SignUpInputValue } from "../constants";
+import ButtonLoader from "../components/ButtonLoader";
 
 const Signup = () => {
   const [inputValue, setInputValue] = useState<SignUpInputValue>({
@@ -10,6 +11,7 @@ const Signup = () => {
     password: "",
     username: "",
   });
+  const [loading, setLoading] = useState(false);
   const { email, password, username } = inputValue;
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,10 +23,36 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const successStatus = await SignupUser(inputValue);
-    console.log(successStatus, "successStatus");
-    if (successStatus) {
-      window.location.href = "/";
+    setLoading(true);
+    const id = toast.loading("SIgning up...");
+    try {
+      const successStatus = await SignupUser(inputValue);
+      console.log(successStatus, "successStatus");
+      if (successStatus) {
+        toast.update(id, {
+          render: "Signed up. Redirecting...",
+          type: "success",
+          isLoading: false,
+        });
+        window.location.href = "/";
+      } else {
+        toast.update(id, {
+          render: "Error signing up.",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast.update(id, {
+        render: "Error signing up.",
+        type: "error",
+        isLoading: false,
+        autoClose: 1000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,7 +90,15 @@ const Signup = () => {
             onChange={handleOnChange}
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">
+          {loading ? (
+            <>
+              <ButtonLoader /> Loading...
+            </>
+          ) : (
+            "Submit"
+          )}
+        </button>
         <span>
           Already have an account? <Link to={"/login"}>Login</Link>
         </span>

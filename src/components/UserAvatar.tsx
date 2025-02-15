@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Logout } from "../Apis";
 import { UserInterface } from "../constants";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const UserAvatar = ({ user }: { user: UserInterface }) => {
   const queryClient = useQueryClient();
@@ -10,15 +11,27 @@ const UserAvatar = ({ user }: { user: UserInterface }) => {
   const navigate = useNavigate();
 
   const LogoutUser = async () => {
+    const id = toast.loading("Logging out...");
     try {
       console.log("triggering logout");
       const data: any = await Logout();
       console.log(data, "data");
       if (data) {
         queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        toast.update(id, {
+          render: "Logged out. Redirecting...",
+          type: "success",
+          isLoading: false,
+        });
         navigate("/login");
       }
     } catch (err) {
+      toast.update(id, {
+        render: "Could not get logged out",
+        type: "error",
+        isLoading: false,
+        autoClose: 1000,
+      });
       console.log(err, "logout err");
     }
   };

@@ -1,14 +1,25 @@
+import CardLoader from "../components/CardLoader";
 import { UserInterface } from "../constants";
 import { useNavigate } from "react-router-dom";
 
-const Home = ({ user }: { user: UserInterface }) => {
+const Home = ({
+  user,
+  isUserDataLoading,
+}: {
+  user: UserInterface;
+  isUserDataLoading: boolean;
+}) => {
   const navigate = useNavigate();
 
   const renderContent = () => {
     switch (user?.subscriptionPlan) {
       case "Free":
         return (
-          <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md text-center">
+          <div
+            className={`bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md text-center ${
+              isUserDataLoading ? "opacity-20" : "opacity-100"
+            }`}
+          >
             <h2 className="text-xl font-semibold text-gray-700 dark:text-white">
               Welcome, {user?.username}!
             </h2>
@@ -29,7 +40,11 @@ const Home = ({ user }: { user: UserInterface }) => {
 
       case "Pro":
         return (
-          <div className="bg-blue-100 dark:bg-blue-900 p-6 rounded-lg shadow-md w-full max-w-md text-center">
+          <div
+            className={`bg-blue-100 dark:bg-blue-900 p-6 rounded-lg shadow-md w-full max-w-md text-center ${
+              isUserDataLoading ? "opacity-20" : "opacity-100"
+            }`}
+          >
             <h2 className="text-xl font-semibold text-gray-700 dark:text-white">
               Welcome, {user?.username}!
             </h2>
@@ -55,7 +70,11 @@ const Home = ({ user }: { user: UserInterface }) => {
 
       case "Enterprise":
         return (
-          <div className="bg-yellow-100 dark:bg-yellow-800 p-6 rounded-lg shadow-md w-full max-w-md text-center">
+          <div
+            className={`bg-yellow-100 dark:bg-yellow-800 p-6 rounded-lg shadow-md w-full max-w-md text-center ${
+              isUserDataLoading ? "opacity-20" : "opacity-100"
+            }`}
+          >
             <h2 className="text-xl font-semibold text-gray-700 dark:text-white">
               Welcome, {user?.username}!
             </h2>
@@ -75,7 +94,11 @@ const Home = ({ user }: { user: UserInterface }) => {
 
       default:
         return (
-          <p className="text-red-500 dark:text-red-400">
+          <p
+            className={`text-red-500 dark:text-red-400 ${
+              isUserDataLoading ? "opacity-20" : "opacity-100"
+            }`}
+          >
             Invalid subscription plan
           </p>
         );
@@ -86,6 +109,7 @@ const Home = ({ user }: { user: UserInterface }) => {
     <>
       <div className="home_page flex rounded-2xl flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         {renderContent()}
+        {isUserDataLoading && <CardLoader />}
       </div>
     </>
   );
