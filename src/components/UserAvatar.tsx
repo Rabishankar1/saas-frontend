@@ -1,15 +1,26 @@
 import { useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { Logout } from "../Apis";
+import { UserInterface } from "../constants";
+import { useQueryClient } from "@tanstack/react-query";
 
-const UserAvatar = ({ user }: any) => {
-  //@ts-ignore
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+const UserAvatar = ({ user }: { user: UserInterface }) => {
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const Logout = () => {
-    removeCookie("token", { path: "/" });
-    navigate("/login");
+
+  const LogoutUser = async () => {
+    try {
+      console.log("triggering logout");
+      const data: any = await Logout();
+      console.log(data, "data");
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        navigate("/login");
+      }
+    } catch (err) {
+      console.log(err, "logout err");
+    }
   };
   return (
     <div className="relative">
@@ -50,7 +61,7 @@ const UserAvatar = ({ user }: any) => {
               className="w-full px-2 py-1 text-sm text-white cursor-pointer"
               onClick={() => {
                 setIsOpen(false);
-                Logout();
+                LogoutUser();
               }}
             >
               Logout

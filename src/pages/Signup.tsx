@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import { SignupUser } from "../Apis";
+import { SignUpInputValue } from "../constants";
 
 const Signup = () => {
-  interface InputValue {
-    email: string;
-    password: string;
-    username: string;
-  }
-  const [inputValue, setInputValue] = useState<InputValue>({
+  const [inputValue, setInputValue] = useState<SignUpInputValue>({
     email: "",
     password: "",
     username: "",
@@ -23,42 +19,12 @@ const Signup = () => {
     });
   };
 
-  interface ApiResponse {
-    success: boolean;
-    message: string;
-  }
-
-  const handleError = (err: string) =>
-    toast.error(err, {
-      position: "bottom-left",
-    });
-  const handleSuccess = (msg: string) =>
-    toast.success(msg, {
-      position: "bottom-right",
-    });
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const { data } = await axios.post<ApiResponse>(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/signup`,
-        {
-          ...inputValue,
-        },
-        { withCredentials: true }
-      );
-      const { success, message } = data;
-      if (success) {
-        handleSuccess(message);
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
-      } else {
-        handleError(message);
-      }
-    } catch (error: any) {
-      console.log(error?.response?.data?.message);
-      handleError(error?.response?.data?.message || "Something went wrong");
+    const successStatus = await SignupUser(inputValue);
+    console.log(successStatus, "successStatus");
+    if (successStatus) {
+      window.location.href = "/";
     }
   };
 

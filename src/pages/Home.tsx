@@ -2,7 +2,6 @@ import { UserInterface } from "../constants";
 import { useNavigate } from "react-router-dom";
 
 const Home = ({ user }: { user: UserInterface }) => {
-  console.log(user, "user");
   const navigate = useNavigate();
 
   const renderContent = () => {

@@ -11,18 +11,30 @@ function App() {
   const { data: user, refetch: refetchData } = useQuery({
     queryKey: ["currentUser"],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SERVER_DOMAIN}/user/current-user`,
-        { withCredentials: true }
-      );
-      return response.data.user;
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER_DOMAIN}/user/current-user`,
+          { withCredentials: true }
+        );
+        console.log(response, "response in app");
+        return response?.data?.user;
+      } catch (err) {
+        console.log(err, "err in user auth");
+        if (
+          window.location.pathname !== "/login" &&
+          window.location.pathname !== "/signup"
+        ) {
+          window.location.href = "/login";
+        }
+        return null;
+      }
     },
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
+    // refetchOnWindowFocus: false,
+    // refetchOnReconnect: false,
+    // refetchOnMount: false,
     retry: false,
+    initialData: null,
   });
-
   return (
     <BrowserRouter>
       <div className="App min-h-full bg-white dark:bg-gray-800 transition-colors">

@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import Switcher from "./Switcher";
 import UserAvatar from "./UserAvatar";
+import { UserInterface } from "../constants";
 
-const Navbar = ({ user }: { user: any }) => {
+const Navbar = ({ user }: { user: UserInterface }) => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 

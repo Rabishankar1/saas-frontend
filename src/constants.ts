@@ -8,3 +8,8 @@ export interface UserInterface {
   createdAt?: any;
   subscriptionPlan: plansType;
 }
+export interface SignUpInputValue {
+  email: string;
+  password: string;
+  username: string;
+}
