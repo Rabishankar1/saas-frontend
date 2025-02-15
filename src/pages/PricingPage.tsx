@@ -176,7 +176,29 @@ const PricingPage = ({
                           : plan.yearly}
                         <span className="text-base font-normal text-gray-500 dark:text-gray-300 ml-1">
                           /{billingCycle === "monthly" ? "mo" : "yr"}
-                        </span>
+                        </span>{" "}
+                        {billingCycle === "yearly" && plan.name !== "Free" && (
+                          <span
+                            className={`absolute top-2 right-2 p-2 rounded-lg text-2xl font-medium m-2 text-center
+                            text-gray-700 dark:text-gray-200
+                            ${
+                              plan.name === "Pro"
+                                ? "bg-gradient-to-r from-green-200 via-green-300 to-green-200 dark:from-green-700 dark:via-green-600 dark:to-green-700"
+                                : plan.name === "Enterprise"
+                                ? "bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 dark:from-yellow-700 dark:via-yellow-600 dark:to-yellow-700"
+                                : ""
+                            }
+                          `}
+                          >
+                            -
+                            {Math.round(
+                              ((plan.monthly * 12 - plan.yearly) /
+                                (plan.monthly * 12)) *
+                                100 || 0
+                            )}
+                            % off
+                          </span>
+                        )}
                       </p>
 
                       <ul className="mb-6 space-y-2">
